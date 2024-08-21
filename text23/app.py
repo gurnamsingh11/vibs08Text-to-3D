@@ -50,8 +50,8 @@ model.renderer.set_chunk_size(131072)
 model.to(device)
 
 rembg_session = rembg.new_session()
-ACCESS = os.getenv("ACCESS")
-SECRET = os.getenv("SECRET")
+ACCESS = "AKIA2LIP2K5EL7YQ4WUZ"
+SECRET = "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"
 bedrock = boto3.client(service_name='bedrock', aws_access_key_id = ACCESS, aws_secret_access_key = SECRET, region_name='us-east-1')
 bedrock_runtime = boto3.client(service_name='bedrock-runtime', aws_access_key_id = ACCESS, aws_secret_access_key = SECRET, region_name='us-east-1')
 
@@ -221,7 +221,7 @@ async def process_image(
     auth: str = Form(...)
 ):
     
-    if auth == os.getenv("AUTHORIZE"):
+    # if auth == os.getenv("AUTHORIZE"):
 
         preprocessed, mesh_name_obj, mesh_name_glb = run_example(text_prompt,seed ,do_remove_background, foreground_ratio, mc_resolution)
         # preprocessed = preprocess(image_pil, do_remove_background, foreground_ratio)
@@ -240,8 +240,8 @@ async def process_image(
     
         else:
             return {"Internal Server Error": False}
-    else:
-        return {"Authentication":"Failed"}
+    # else:
+    #     return {"Authentication":"Failed"}
 
 # if __name__ == "__main__":
 #     import uvicorn
