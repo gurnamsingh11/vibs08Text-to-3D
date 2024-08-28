@@ -10,6 +10,7 @@ import base64
 from PIL import Image
 from functools import partial
 import io
+import uvicorn
 
 
 app = FastAPI()
@@ -171,6 +172,6 @@ async def process_text(
     else:
         return {"Authentication": "Failed"}
 
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=7860)
+#if __name__ == "__main__":
+#    import uvicorn
+#    uvicorn.run(app, host="0.0.0.0", port=7860)
