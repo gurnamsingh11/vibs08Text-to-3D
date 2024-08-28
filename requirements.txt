@@ -1,0 +1,6 @@
+Pillow
+gradio_client
+fastapi
+fastapi[uvicorn]
+boto3
+requests
