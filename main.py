@@ -114,31 +114,18 @@ def aws_bedrock(pos_prompt,output_path='output_image.png'):
     
   return output_path
 
-def three_d(prompt, seed, fr, mc, auth, text=None):
+
+def three_d(prompt, seed, fr, mc, auth, use_aws, text=None):
     new_prompt = gen_pos_prompt(prompt)
 
-    # Run both functions and collect their file paths
-    text2img_file_path = text2img(new_prompt)
-    aws_bedrock_file_path = aws_bedrock(new_prompt)
-
-    # Prepare payload for the 3D model generation
-    payload = {
-        'seed': seed,
-        'enhance_image': False,
-        'do_remove_background': True,
-        'foreground_ratio': fr,
-        'mc_resolution': mc,
-        'auth': auth,
-        'text_prompt': text
-    }
-    
-    # Collect results from both functions
     results = {}
 
-    for file_path, key_prefix in [(text2img_file_path, "text2img"), (aws_bedrock_file_path, "aws_bedrock")]:
-        with open(file_path, 'rb') as image_file:
+    # Try running text2img
+    try:
+        text2img_file_path = text2img(new_prompt)
+        with open(text2img_file_path, 'rb') as image_file:
             files = {
-                'file': (file_path, image_file, 'image/png')
+                'file': (text2img_file_path, image_file, 'image/png')
             }
 
             headers = {
@@ -147,30 +134,34 @@ def three_d(prompt, seed, fr, mc, auth, text=None):
 
             response = requests.post(url, headers=headers, files=files, data=payload)
             result = response.json()
+            results["text2img_img_path"] = result.get("img_path")
+            results["text2img_obj_path"] = result.get("obj_path")
+            results["text2img_glb_path"] = result.get("glb_path")
+    except Exception as e:
+        results["text2img_error"] = str(e)
 
-            # Append results to the final dictionary
-            results[f"{key_prefix}_img_path"] = result.get("img_path")
-            results[f"{key_prefix}_obj_path"] = result.get("obj_path")
-            results[f"{key_prefix}_glb_path"] = result.get("glb_path")
-    
+    # Try running aws_bedrock
+    try:
+        aws_bedrock_file_path = aws_bedrock(new_prompt)
+        with open(aws_bedrock_file_path, 'rb') as image_file:
+            files = {
+                'file': (aws_bedrock_file_path, image_file, 'image/png')
+            }
+
+            headers = {
+                'accept': 'application/json'
+            }
+
+            response = requests.post(url, headers=headers, files=files, data=payload)
+            result = response.json()
+            results["aws_bedrock_img_path"] = result.get("img_path")
+            results["aws_bedrock_obj_path"] = result.get("obj_path")
+            results["aws_bedrock_glb_path"] = result.get("glb_path")
+    except Exception as e:
+        results["aws_bedrock_error"] = str(e)
+
     return results
 
-
-
-
-@app.post("/process_text/")
-async def process_text(
-    text_prompt: str = Form(...),
-    seed: int = Form(...),
-    foreground_ratio: float = Form(...),
-    mc_resolution: int = Form(...),
-    auth: str = Form(...)
-    #use_aws: bool = Form(...)
-):
-    if auth == "userName":
-        return three_d(text_prompt, seed, foreground_ratio, mc_resolution, auth)
-    else:
-        return {"Authentication": "Failed"}
 
 #if __name__ == "__main__":
 #    import uvicorn
