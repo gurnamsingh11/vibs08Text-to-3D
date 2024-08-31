@@ -4,3 +4,4 @@ fastapi
 boto3
 uvicorn
 mangum
+uvicorn["standard"]
