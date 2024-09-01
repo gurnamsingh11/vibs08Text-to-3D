@@ -31,8 +31,8 @@ client = Client("vibs08/flash-sd3-new", hf_token="hf_BwWQSHTVgeYLqdoutjaxHMgdxwT
 
 url = 'https://vibs08-image-3d-fastapi.hf.space/process_image/'
 
-ACCESS = "AKIA2LIP2K5EL7YQ4WUZ"
-SECRET = "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"
+ACCESS = os.getenv("ACCESS")
+SECRET = os.getenv("SECRET")
 bedrock = boto3.client(service_name='bedrock', aws_access_key_id = ACCESS, aws_secret_access_key = SECRET, region_name='us-east-1')
 bedrock_runtime = boto3.client(service_name='bedrock-runtime', aws_access_key_id = ACCESS, aws_secret_access_key = SECRET, region_name='us-east-1')
 
